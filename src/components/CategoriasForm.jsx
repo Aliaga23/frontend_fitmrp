@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
-import { FaCog, FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import Modal from 'react-modal';
+import {FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
 import Sidebar from './SideBar'; // Importa el componente Sidebar
 
 const Categorias = () => {
@@ -12,13 +10,12 @@ const Categorias = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'ascending' });
+  const [searchTerm] = useState('');
+  const [sortConfig] = useState({ key: 'nombre', direction: 'ascending' });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [errors, setErrors] = useState({});
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategorias();
@@ -73,13 +70,6 @@ const Categorias = () => {
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
 
   const sortedCategorias = [...categorias].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
