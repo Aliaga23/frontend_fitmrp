@@ -59,7 +59,6 @@ function SignInForm() {
           onChange={handleChange}
         />
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <a href="/">Olvidaste tu contraseña?</a>
         <button type="submit">Sign In</button>
       </form>
     </div>
