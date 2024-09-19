@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
 import { FaPlus, FaTrash, FaBars } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import Modal from 'react-modal';
 import Sidebar from './SideBar';
 
 const RolPermiso = () => {
@@ -14,8 +12,6 @@ const RolPermiso = () => {
   const [deleteIds, setDeleteIds] = useState({ rol_id: '', permiso_id: '' });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoles();
@@ -44,7 +40,6 @@ const RolPermiso = () => {
   const fetchRolPermisos = async () => {
     try {
       const response = await axios.get('/rolpermiso');
-      // Asegúrate de que los datos se asignan correctamente
       console.log('Datos de rol-permisos:', response.data);
       setRolPermisos(response.data);
     } catch (error) {
@@ -170,30 +165,29 @@ const RolPermiso = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-  {rolPermisos.length > 0 ? (
-    rolPermisos.map((rp) => (
-      <tr key={`${rp.rol_id}-${rp.permiso_id}`} className="hover:bg-gray-100 transition duration-200">
-        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{rp.rol_nombre}</td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{rp.permiso_nombre}</td>
-        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-          <button
-            onClick={() => confirmDeleteRolPermiso(rp.rol_id, rp.permiso_id)}
-            className="bg-red-500 text-white p-2 rounded shadow-md hover:bg-red-600 transition duration-200 flex items-center"
-          >
-            <FaTrash />
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="3" className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-500">
-        No hay permisos asignados a roles.
-      </td>
-    </tr>
-  )}
-</tbody>
-
+                {rolPermisos.length > 0 ? (
+                  rolPermisos.map((rp) => (
+                    <tr key={`${rp.rol_id}-${rp.permiso_id}`} className="hover:bg-gray-100 transition duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{rp.rol_nombre}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{rp.permiso_nombre}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => confirmDeleteRolPermiso(rp.rol_id, rp.permiso_id)}
+                          className="bg-red-500 text-white p-2 rounded shadow-md hover:bg-red-600 transition duration-200 flex items-center"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-500">
+                      No hay permisos asignados a roles.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
             </table>
           </div>
 

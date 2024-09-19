@@ -23,8 +23,8 @@ function SignUpForm() {
 
     try {
       const { name, email, password } = state;
-      const response = await api.post('/auth/signup', { nombre: name, email, password, rol_id: 2 }); // Ajusta `rol_id` según tu lógica
-      
+      await api.post('/auth/signup', { nombre: name, email, password, rol_id: 2 }); // Ajusta `rol_id` según tu lógica
+
       setState({ name: "", email: "", password: "" });
     } catch (error) {
       setError(error.response?.data?.message || 'Error al registrar');

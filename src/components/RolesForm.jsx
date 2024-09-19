@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
-import { FaCog, FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import Modal from 'react-modal';
+import { FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
 import Sidebar from './SideBar'; // Importa el componente Sidebar
 
 const Roles = () => {
@@ -12,13 +10,10 @@ const Roles = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'ascending' });
+  const [sortConfig] = useState({ key: 'nombre', direction: 'ascending' }); // No se necesita setSortConfig
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [errors, setErrors] = useState({});
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoles();
@@ -73,14 +68,6 @@ const Roles = () => {
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
   const sortedRoles = [...roles].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
       return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -91,14 +78,10 @@ const Roles = () => {
     return 0;
   });
 
-  const filteredRoles = sortedRoles.filter((rol) =>
-    rol.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredRoles.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredRoles.length / itemsPerPage);
+  const currentItems = sortedRoles.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedRoles.length / itemsPerPage);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
@@ -210,7 +193,7 @@ const Roles = () => {
 
           {/* Modal para Confirmación de Eliminación */}
           {showModal && (
-            <div className="            flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                 <h3 className="text-lg font-semibold mb-4">Confirmar Eliminación</h3>
                 <p className="mb-4">¿Estás seguro de que deseas eliminar este rol?</p>
@@ -242,4 +225,3 @@ const Roles = () => {
 };
 
 export default Roles;
-
