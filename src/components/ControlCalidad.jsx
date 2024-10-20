@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
-import { FaPlus, FaBars, FaEye } from 'react-icons/fa';
+import { FaPlus, FaBars, FaEye, FaBox } from 'react-icons/fa';
+import Modal from 'react-modal';
 import { motion } from 'framer-motion';
-import Sidebar from './SideBar'; // Importa el componente Sidebar
+import Sidebar from './SideBar';
 
 const ControlCalidad = () => {
   const [productos, setProductos] = useState([]);
@@ -12,14 +13,95 @@ const ControlCalidad = () => {
     resultado: '',
     observaciones: '',
   });
-  const [showTable, setShowTable] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
   useEffect(() => {
+    Modal.setAppElement('#root'); 
+
     fetchProductos();
   }, []);
+/*<Modal
+  isOpen={showModal}
+  onRequestClose={() => setShowModal(false)}
+  className="flex items-center justify-center fixed inset-0 z-50"
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+>
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8, rotate: 90 }}
+    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+    transition={{
+      type: 'spring',
+      stiffness: 300,
+      damping: 20,
+      duration: 0.6,
+    }}
+    className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl"
+  >
+    <motion.h3
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.2, duration: 0.5 }}
+      className="text-3xl font-bold text-gray-900 mb-6 text-center"
+    >
+      Registro de Control de Calidad
+    </motion.h3>
 
+    {controlCalidad.length > 0 ? (
+      <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+        <h3 className="text-lg font-semibold mb-6">Control de Calidad</h3>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Resultado</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Observaciones</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Fecha</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {controlCalidad.map((control, index) => (
+              <motion.tr
+                key={index}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="hover:bg-gray-50 transition duration-200"
+              >
+                <td className="px-6 py-4 text-sm text-gray-800">{control.resultado}</td>
+                <td className="px-6 py-4 text-sm text-gray-800">{control.observaciones}</td>
+                <td className="px-6 py-4 text-sm text-gray-800">{new Date(control.fecha_control).toLocaleString()}</td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="text-center text-gray-600"
+      >
+        No hay controles de calidad registrados para este producto.
+      </motion.p>
+    )}
+
+    <div className="flex justify-end mt-6">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowModal(false)}
+        className="bg-red-600 text-white p-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300"
+      >
+        Cerrar
+      </motion.button>
+    </div>
+  </motion.div>
+</Modal>
+*/
   // Obtener la lista de productos
   const fetchProductos = async () => {
     try {
@@ -30,24 +112,21 @@ const ControlCalidad = () => {
     }
   };
 
-  // Obtener registros de control de calidad de un producto específico
   const fetchControlCalidad = async (producto_id) => {
     try {
       const response = await axios.get(`/quality-controls/producto/${producto_id}`);
       setControlCalidad(response.data);
-      setShowTable(true); // Mostrar la tabla cuando se haga clic en "Ver"
+      setShowModal(true); 
     } catch (error) {
       console.error('Error al obtener el control de calidad:', error);
     }
   };
 
-  // Manejar cambios en el formulario
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormState({ ...formState, [id]: value });
   };
 
-  // Validar formulario
   const validateForm = () => {
     const newErrors = {};
     if (!selectedProducto) newErrors.producto_id = 'Producto es requerido';
@@ -56,7 +135,6 @@ const ControlCalidad = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Registrar control de calidad
   const registerControlCalidad = async () => {
     if (validateForm()) {
       try {
@@ -66,7 +144,7 @@ const ControlCalidad = () => {
           resultado,
           observaciones,
         });
-        fetchControlCalidad(selectedProducto); // Refrescar los registros
+        fetchControlCalidad(selectedProducto); 
         resetForm();
       } catch (error) {
         console.error('Error al registrar el control de calidad:', error);
@@ -74,7 +152,6 @@ const ControlCalidad = () => {
     }
   };
 
-  // Resetear formulario
   const resetForm = () => {
     setFormState({
       resultado: '',
@@ -83,27 +160,46 @@ const ControlCalidad = () => {
     setErrors({});
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = productos.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(productos.length / itemsPerPage);
+
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-gray-100 to-gray-300">
       {/* Sidebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center bg-white p-4 shadow-md mb-4">
-          <div className="text-2xl font-semibold text-gray-800">Gestión de Control de Calidad</div>
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-500 focus:outline-none md:hidden">
+      <div className={`flex-1 transition-all duration-300 ease-in-out ${sidebarOpen ? 'md:ml-64' : ''}`}>
+        <header className="flex justify-between items-center bg-gradient-to-r from-gray-900 to-gray-800 text-white p-6 shadow-md">
+          <h1 className="text-3xl font-semibold">Control de Calidad de Productos</h1>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white focus:outline-none md:hidden">
             <FaBars />
           </button>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-6 md:p-8">
+          {/* Box para el total de productos */}
+          <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-700">Total de Productos</h3>
+              <p className="text-3xl font-bold text-gray-900">{productos.length}</p>
+            </div>
+            <FaBox className="text-5xl text-gray-400" />
+          </div>
+
           {/* Formulario de Registro */}
           <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-lg font-semibold mb-6">Registrar Control de Calidad</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-6">Registrar Control de Calidad</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <label htmlFor="producto_id" className="block text-gray-700 font-medium mb-2">Producto</label>
+              <div className="relative">
+                <label htmlFor="producto_id" className="block text-gray-700 font-semibold mb-2">Producto</label>
                 <select
                   id="producto_id"
                   value={selectedProducto}
@@ -119,8 +215,9 @@ const ControlCalidad = () => {
                 </select>
                 {errors.producto_id && <p className="text-red-500 text-sm mt-2">{errors.producto_id}</p>}
               </div>
-              <div>
-                <label htmlFor="resultado" className="block text-gray-700 font-medium mb-2">Resultado</label>
+
+              <div className="relative">
+                <label htmlFor="resultado" className="block text-gray-700 font-semibold mb-2">Resultado</label>
                 <select
                   id="resultado"
                   value={formState.resultado}
@@ -133,8 +230,9 @@ const ControlCalidad = () => {
                 </select>
                 {errors.resultado && <p className="text-red-500 text-sm mt-2">{errors.resultado}</p>}
               </div>
-              <div>
-                <label htmlFor="observaciones" className="block text-gray-700 font-medium mb-2">Observaciones</label>
+
+              <div className="relative">
+                <label htmlFor="observaciones" className="block text-gray-700 font-semibold mb-2">Observaciones</label>
                 <textarea
                   id="observaciones"
                   placeholder="Observaciones"
@@ -147,74 +245,145 @@ const ControlCalidad = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={registerControlCalidad}
-                className="bg-green-600 text-white p-3 rounded-lg shadow-lg hover:bg-green-700 transition duration-300 flex items-center"
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition duration-200 flex items-center"
               >
                 <FaPlus className="mr-2" /> Registrar Control
               </button>
             </div>
           </div>
 
-          {/* Tabla de Productos con botón "Ver" */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-lg font-semibold mb-4">Productos</h3>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Nombre</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {productos.map((producto) => (
-                  <tr key={producto.id} className="hover:bg-gray-50 transition duration-200">
-                    <td className="px-6 py-4 text-sm text-gray-800">{producto.nombre}</td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => fetchControlCalidad(producto.id)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-                      >
-                        <FaEye className="mr-2" /> Ver
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Tabla de Control de Calidad */}
-          {showTable && controlCalidad.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-md mt-8">
-              <h3 className="text-lg font-semibold mb-6">Control de Calidad</h3>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Resultado</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Observaciones</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {controlCalidad.map((control, index) => (
-                    <motion.tr
-                      key={index}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                                            <td className="px-6 py-4 text-sm text-gray-800">{control.resultado}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800">{control.observaciones}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800">{new Date(control.fecha_control).toLocaleString()}</td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+        {/* Tabla de Productos con botón "Ver" */}
+<div className="bg-white p-6 rounded-lg shadow-md mb-8">
+  <table className="min-w-full table-auto border-collapse border border-gray-400">
+    <thead className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <tr>
+        <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">Nombre</th>
+        <th className="px-6 py-4 text-right text-sm font-bold uppercase tracking-wider border border-gray-600">Acciones</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-400">
+      {currentItems.map((producto) => (
+        <tr key={producto.id} className="hover:bg-gray-100 transition duration-200">
+          <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">{producto.nombre}</td>
+          <td className="px-6 py-4 text-right text-sm border border-gray-400">
+            <div className="flex space-x-2 justify-end">
+              <button
+                onClick={() => fetchControlCalidad(producto.id)}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition duration-200 flex items-center"
+              >
+                <FaEye className="mr-2" /> Ver Control
+              </button>
             </div>
-          )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {/* Paginación */}
+  <div className="flex justify-between items-center mt-4">
+    <button
+      onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
+      disabled={currentPage === 1}
+      className="bg-gradient-to-r from-gray-500 to-gray-600 text-white p-3 rounded-lg shadow-md disabled:bg-gray-300 hover:bg-gray-700 transition duration-200"
+    >
+      Anterior
+    </button>
+    <span className="text-lg">Página {currentPage} de {totalPages}</span>
+    <button
+      onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
+      disabled={currentPage === totalPages}
+      className="bg-gradient-to-r from-gray-500 to-gray-600 text-white p-3 rounded-lg shadow-md disabled:bg-gray-300 hover:bg-gray-700 transition duration-200"
+    >
+      Siguiente
+    </button>
+  </div>
+</div>
+
+          {/* Modal para ver Control de Calidad */}
+          <Modal
+  isOpen={showModal}
+  onRequestClose={() => setShowModal(false)}
+  className="flex items-center justify-center fixed inset-0 z-50"
+  overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+>
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8, rotate: 90 }}
+    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+    transition={{
+      type: 'spring',
+      stiffness: 300,
+      damping: 20,
+      duration: 0.6,
+    }}
+    className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl"
+  >
+    <motion.h3
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.2, duration: 0.5 }}
+      className="text-3xl font-bold text-gray-900 mb-6 text-center"
+    >
+      Registro de Control de Calidad
+    </motion.h3>
+
+    {/* Tabla de Control de Calidad */}
+    {controlCalidad.length > 0 ? (
+      <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+        <h3 className="text-lg font-semibold mb-6">Control de Calidad</h3>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Resultado</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Observaciones</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Fecha</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {controlCalidad.map((control, index) => (
+              <motion.tr
+                key={index}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="hover:bg-gray-50 transition duration-200"
+              >
+                <td className="px-6 py-4 text-sm text-gray-800">{control.resultado}</td>
+                <td className="px-6 py-4 text-sm text-gray-800">{control.observaciones}</td>
+                <td className="px-6 py-4 text-sm text-gray-800">{new Date(control.fecha_control).toLocaleString()}</td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="text-center text-gray-600"
+      >
+        No hay controles de calidad registrados para este producto.
+      </motion.p>
+    )}
+
+    <div className="flex justify-end mt-6">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowModal(false)}
+        className="bg-red-600 text-white p-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300"
+      >
+        Cerrar
+      </motion.button>
+    </div>
+  </motion.div>
+</Modal>
+
+
         </main>
 
-        <footer className="bg-white p-4 text-center text-gray-500 shadow-inner text-lg">
+        <footer className="bg-white p-6 text-center text-gray-500 shadow-inner text-lg">
           &copy; {new Date().getFullYear()} Gestión de Control de Calidad. Todos los derechos reservados.
         </footer>
       </div>
@@ -223,4 +392,3 @@ const ControlCalidad = () => {
 };
 
 export default ControlCalidad;
-

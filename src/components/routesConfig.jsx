@@ -5,7 +5,6 @@ const routesConfig = {
           sector: 'Usuarios',
           routes: [
             { path: '/usuario', label: 'Gestionar Usuarios', permiso: 'ver_usuarios' },
-            { path: '/usuario', label: 'Añadir Usuario', permiso: 'crear_usuario' },
           ],
         },
       ],
@@ -16,7 +15,6 @@ const routesConfig = {
           sector: 'Productos',
           routes: [
             { path: '/producto', label: 'Lista de Productos', permiso: 'ver_productos' },
-            { path: '/producto', label: 'Añadir Producto', permiso: 'crear_producto' },
           ],
         },
       ],

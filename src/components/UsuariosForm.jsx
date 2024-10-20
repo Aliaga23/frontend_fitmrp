@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
-import { FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaBars, FaUserCircle } from 'react-icons/fa';
 import Sidebar from './SideBar';
 
 const Usuarios = () => {
@@ -23,6 +23,7 @@ const Usuarios = () => {
   const [errors, setErrors] = useState({});
   const [animate, setAnimate] = useState(false);
 
+  
   useEffect(() => {
     fetchUsuarios();
     fetchRoles();
@@ -129,7 +130,7 @@ const Usuarios = () => {
   const totalPages = Math.ceil(filteredUsuarios.length / itemsPerPage);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-gray-100 to-gray-300">
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-40 md:hidden"
@@ -140,52 +141,63 @@ const Usuarios = () => {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       <div className={`flex-1 transition-all duration-300 ease-in-out ${sidebarOpen ? 'md:ml-64' : ''}`}>
-        <header className="flex justify-between items-center bg-white p-4 shadow-md">
-          <div className="text-2xl font-semibold text-gray-800">Gestión de Usuarios</div>
+        <header className="flex justify-between items-center bg-gradient-to-r from-gray-900 to-gray-800 text-white p-7 shadow-md relative">
+          <h1 className="text-3xl font-semibold">Gestión de Usuarios</h1> {/* Título ligeramente más grande */}
+          <div className="absolute right-6 top-7 text-right"> {/* Posición absoluta en la esquina derecha */}
+          </div>
           <div className="flex items-center space-x-4">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-500 focus:outline-none md:hidden">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white focus:outline-none md:hidden">
               <FaBars />
             </button>
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-6 md:p-8">
+          {/* Box para el total de usuarios */}
+          <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-700">Total Usuarios</h3>
+              <p className="text-3xl font-bold text-gray-900">{usuarios.length}</p>
+            </div>
+            <FaUserCircle className="text-5xl text-gray-400" />
+          </div>
+
           {/* Formulario */}
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Crear/Actualizar Usuario</h3>
-            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${animate ? 'animate-pulse' : ''}`}>
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h3 className="text-2xl font-semibold text-gray-700 mb-6">Crear/Actualizar Usuario</h3>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${animate ? 'animate-pulse' : ''}`}>
               <div className="relative">
-                <label htmlFor="nombre" className="text-gray-700">Nombre</label>
+                <label htmlFor="nombre" className="text-gray-700 font-semibold">Nombre</label>
                 <input
                   type="text"
                   id="nombre"
                   placeholder="Nombre"
                   value={formState.nombre}
                   onChange={handleInputChange}
-                  className={`border p-3 rounded w-full ${errors.nombre ? 'border-red-500' : ''}`}
+                  className={`border p-4 rounded-lg w-full mt-2 shadow-sm focus:ring-2 focus:ring-blue-600 ${errors.nombre ? 'border-red-500' : ''}`}
                 />
                 {errors.nombre && <p className="text-red-500 text-sm mt-1">{errors.nombre}</p>}
               </div>
               <div className="relative">
-                <label htmlFor="email" className="text-gray-700">Correo Electrónico</label>
+                <label htmlFor="email" className="text-gray-700 font-semibold">Correo Electrónico</label>
                 <input
                   type="email"
                   id="email"
                   placeholder="Correo Electrónico"
                   value={formState.email}
                   onChange={handleInputChange}
-                  className={`border p-3 rounded w-full ${errors.email ? 'border-red-500' : ''}`}
+                  className={`border p-4 rounded-lg w-full mt-2 shadow-sm focus:ring-2 focus:ring-blue-600 ${errors.email ? 'border-red-500' : ''}`}
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
               <div className="relative">
-                <label htmlFor="rol_id" className="text-gray-700">Rol</label>
+                <label htmlFor="rol_id" className="text-gray-700 font-semibold">Rol</label>
                 <select
                   id="rol_id"
                   value={formState.rol_id}
                   onChange={handleInputChange}
-                  className={`border p-3 rounded w-full ${errors.rol_id ? 'border-red-500' : ''}`}
+                  className={`border p-4 rounded-lg w-full mt-2 shadow-sm focus:ring-2 focus:ring-blue-600 ${errors.rol_id ? 'border-red-500' : ''}`}
                 >
                   <option value="">Seleccionar rol</option>
                   {roles.map((rol) => (
@@ -199,23 +211,23 @@ const Usuarios = () => {
 
               {!editingId && (
                 <div className="relative">
-                  <label htmlFor="password" className="text-gray-700">Contraseña</label>
+                  <label htmlFor="password" className="text-gray-700 font-semibold">Contraseña</label>
                   <input
                     type="password"
                     id="password"
                     placeholder="Contraseña"
                     value={formState.password}
                     onChange={handleInputChange}
-                    className={`border p-3 rounded w-full ${errors.password ? 'border-red-500' : ''}`}
+                    className={`border p-4 rounded-lg w-full mt-2 shadow-sm focus:ring-2 focus:ring-blue-600 ${errors.password ? 'border-red-500' : ''}`}
                   />
                   {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                 </div>
               )}
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-6">
               <button
                 onClick={createOrUpdateUsuario}
-                className={`p-3 rounded shadow-md transition duration-200 flex items-center ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white`}
+                className={`p-4 rounded-lg shadow-lg transition duration-200 flex items-center text-white ${editingId ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'}`}
               >
                 {editingId ? <FaEdit className="inline mr-2" /> : <FaPlus className="inline mr-2" />}
                 {editingId ? 'Actualizar' : 'Crear'}
@@ -223,59 +235,62 @@ const Usuarios = () => {
             </div>
           </div>
 
-          {/* Tabla de usuarios */}
-          <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse border border-gray-300">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-600 uppercase tracking-wider border border-gray-300">Nombre</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-600 uppercase tracking-wider border border-gray-300">Correo Electrónico</th>
-                  <th className="px-6 py-3 text-left text-sm font-bold text-gray-600 uppercase tracking-wider border border-gray-300">Rol</th>
-                  <th className="px-6 py-3 text-right text-sm font-bold text-gray-600 uppercase tracking-wider border border-gray-300">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentItems.map((usuario) => (
-                  <tr key={usuario.id} className="hover:bg-gray-50 transition duration-200">
-                    <td className="px-6 py-4 text-sm text-gray-700 border border-gray-300">{usuario.nombre}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700 border border-gray-300">{usuario.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700 border border-gray-300">{usuario.rol_id}</td>
-                    <td className="px-6 py-4 text-right text-sm">
-                      <div className="flex space-x-2 justify-end">
-                        <button
-                          onClick={() => {
-                            setEditingId(usuario.id);
-                            setFormState({
-                              nombre: usuario.nombre,
-                              email: usuario.email,
-                              rol_id: usuario.rol_id,
-                              password: '', // Resetear el campo de contraseña al editar
-                            });
-                          }}
-                          className="bg-yellow-500 text-white p-2 rounded shadow-md hover:bg-yellow-600 transition duration-200 flex items-center"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => confirmDeleteUsuario(usuario.id)}
-                          className="bg-red-500 text-white p-2 rounded shadow-md hover:bg-red-600 transition duration-200 flex items-center"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+         {/* Tabla de usuarios */}
+<div className="bg-white rounded-lg shadow-lg overflow-x-auto mb-8">
+  <table className="min-w-full table-auto border-collapse border border-gray-400">
+    <thead className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <tr>
+        <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">Nombre</th>
+        <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">Correo Electrónico</th>
+        <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">Rol</th>
+        <th className="px-6 py-4 text-right text-sm font-bold uppercase tracking-wider border border-gray-600">Acciones</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-400">
+      {currentItems.map((usuario) => (
+        <tr key={usuario.id} className="hover:bg-gray-100 transition duration-200">
+          <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">{usuario.nombre}</td>
+          <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">{usuario.email}</td>
+          <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">{usuario.rol_id}</td>
+          <td className="px-6 py-4 text-right text-sm border border-gray-400">
+            <div className="flex space-x-2 justify-end">
+              <button
+                onClick={() => {
+                  setEditingId(usuario.id);
+                  setFormState({
+                    nombre: usuario.nombre,
+                    email: usuario.email,
+                    rol_id: usuario.rol_id,
+                    password: '', // Resetear el campo de contraseña al editar
+                  });
+                }}
+                className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-3 rounded-lg shadow-md hover:from-yellow-600 hover:to-yellow-700 transition duration-200 flex items-center"
+              >
+                <span className="mr-2">Editar</span>
+                <FaEdit />
+              </button>
+
+              <button
+                onClick={() => confirmDeleteUsuario(usuario.id)}
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white p-3 rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition duration-200 flex items-center"
+              >
+                <span className="mr-2">Eliminar</span>
+                <FaTrash />
+              </button>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
           {/* Paginación */}
           <div className="flex justify-between items-center mt-4">
             <button
               onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
               disabled={currentPage === 1}
-              className="bg-gray-500 text-white p-3 rounded disabled:bg-gray-300 shadow-md hover:bg-gray-600 transition duration-200"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 text-white p-3 rounded-lg shadow-md disabled:bg-gray-300 hover:bg-gray-700 transition duration-200"
             >
               Anterior
             </button>
@@ -283,7 +298,7 @@ const Usuarios = () => {
             <button
               onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="bg-gray-500 text-white p-3 rounded disabled:bg-gray-300 shadow-md hover:bg-gray-600 transition duration-200"
+              className="bg-gradient-to-r from-gray-500 to-gray-600 text-white p-3 rounded-lg shadow-md disabled:bg-gray-300 hover:bg-gray-700 transition duration-200"
             >
               Siguiente
             </button>
@@ -292,19 +307,19 @@ const Usuarios = () => {
           {/* Modal para Confirmación de Eliminación */}
           {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                <h3 className="text-lg font-semibold mb-4">Confirmar Eliminación</h3>
-                <p className="mb-4">¿Estás seguro de que deseas eliminar este usuario?</p>
+              <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <h3 className="text-2xl font-semibold mb-6">Confirmar Eliminación</h3>
+                <p className="mb-6">¿Estás seguro de que deseas eliminar este usuario?</p>
                 <div className="flex justify-end">
                   <button
                     onClick={() => setShowModal(false)}
-                    className="bg-gray-500 text-white p-2 rounded mr-2 shadow-md hover:bg-gray-600 transition duration-200"
+                    className="bg-gradient-to-r from-gray-500 to-gray-600 text-white p-3 rounded-lg shadow-md hover:bg-gray-700 transition duration-200 mr-2"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={deleteUsuario}
-                    className="bg-red-500 text-white p-2 rounded shadow-md hover:bg-red-600 transition duration-200"
+                    className="bg-gradient-to-r from-red-500 to-red-600 text-white p-3 rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition duration-200"
                   >
                     Eliminar
                   </button>
@@ -314,7 +329,7 @@ const Usuarios = () => {
           )}
         </main>
 
-        <footer className="bg-white p-4 text-center text-gray-500 shadow-inner text-lg">
+        <footer className="bg-white p-6 text-center text-gray-500 shadow-inner text-lg">
           &copy; {new Date().getFullYear()} Gestión de Usuarios. Todos los derechos reservados.
         </footer>
       </div>

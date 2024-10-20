@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Usuarios from './components/UsuariosForm';
-import AuthPage from "./components/AuthFormSwitcher";
+import AuthPage from './components/AuthFormSwitcher';
 import Categorias from './components/CategoriasForm';
 import Productos from './components/ProductosForm';
 import Roles from './components/RolesForm';
@@ -10,6 +10,8 @@ import Movimientos from './components/Movimientos';
 import ControlCalidad from './components/ControlCalidad';
 import Lote from './components/Lote';
 import ControlNivelesInventario from './components/ControlNivelesInventario';
+import Page404 from './components/Page404';  // Importa la nueva página 404
+
 const App = () => {
   return (
     <Router>
@@ -25,7 +27,9 @@ const App = () => {
           <Route path="/calidad" element={<ControlCalidad />} />
           <Route path="/lote" element={<Lote />} />
           <Route path="/inventario" element={<ControlNivelesInventario />} />
-        
+
+          {/* Ruta para la página 404 */}
+          <Route path="*" element={<Page404 />} />  {/* Catch-all para rutas no existentes */}
         </Routes>
       </div>
     </Router>
