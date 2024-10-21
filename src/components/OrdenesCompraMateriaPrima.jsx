@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api';
-import { FaPlus, FaEdit, FaTrash, FaBars } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash} from 'react-icons/fa';
 import Sidebar from './SideBar';
 
 const OrdenesCompraMateriaPrima = () => {
