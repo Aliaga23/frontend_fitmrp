@@ -6,12 +6,11 @@ import Sidebar from './SideBar';
 const OrdenesCompra = () => {
   const [ordenesCompra, setOrdenesCompra] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
-  const [inventarios, setInventarios] = useState([]);
   const [formState, setFormState] = useState({
     usuario_id: '',
-    inventario_id: '',
     fecha: '',
     estado: '',
+    tipo_orden: '',  // Nuevo campo para tipo_orden
   });
   const [errors, setErrors] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -22,7 +21,6 @@ const OrdenesCompra = () => {
   useEffect(() => {
     fetchOrdenesCompra();
     fetchUsuarios();
-    fetchInventarios();
   }, []);
 
   const fetchOrdenesCompra = async () => {
@@ -43,15 +41,6 @@ const OrdenesCompra = () => {
     }
   };
 
-  const fetchInventarios = async () => {
-    try {
-      const response = await axios.get('/inventories');
-      setInventarios(response.data);
-    } catch (error) {
-      console.error('Error al obtener los inventarios:', error);
-    }
-  };
-
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormState({ ...formState, [id]: value });
@@ -60,9 +49,9 @@ const OrdenesCompra = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formState.usuario_id) newErrors.usuario_id = 'Usuario es requerido';
-    if (!formState.inventario_id) newErrors.inventario_id = 'Producto es requerido';
     if (!formState.fecha) newErrors.fecha = 'Fecha es requerida';
     if (!formState.estado) newErrors.estado = 'Estado es requerido';
+    if (!formState.tipo_orden) newErrors.tipo_orden = 'Tipo de orden es requerido';  // Validar tipo_orden
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -70,21 +59,21 @@ const OrdenesCompra = () => {
   const handleSaveOrdenCompra = async () => {
     if (validateForm()) {
       try {
-        const { usuario_id, inventario_id, fecha, estado } = formState;
+        const { usuario_id, fecha, estado, tipo_orden } = formState;
 
         if (editingOrdenCompra) {
           await axios.put(`/orden-compra/${editingOrdenCompra.id}`, {
             usuario_id,
-            inventario_id,
             fecha,
             estado,
+            tipo_orden,
           });
         } else {
           await axios.post('/orden-compra', {
             usuario_id,
-            inventario_id,
             fecha,
             estado,
+            tipo_orden,
           });
         }
 
@@ -100,9 +89,9 @@ const OrdenesCompra = () => {
     setEditingOrdenCompra(ordenCompra);
     setFormState({
       usuario_id: ordenCompra.usuario_id,
-      inventario_id: ordenCompra.inventario_id,
       fecha: ordenCompra.fecha,
       estado: ordenCompra.estado,
+      tipo_orden: ordenCompra.tipo_orden,  // Cargar tipo_orden en la edición
     });
   };
 
@@ -118,9 +107,9 @@ const OrdenesCompra = () => {
   const resetForm = () => {
     setFormState({
       usuario_id: '',
-      inventario_id: '',
       fecha: '',
       estado: '',
+      tipo_orden: '',  // Resetear tipo_orden
     });
     setErrors({});
     setEditingOrdenCompra(null);
@@ -176,27 +165,18 @@ const OrdenesCompra = () => {
               </div>
 
               <div className="relative">
-                <label htmlFor="inventario_id" className="block text-gray-700 font-medium mb-2">Producto</label>
+                <label htmlFor="tipo_orden" className="block text-gray-700 font-medium mb-2">Tipo de Orden</label>
                 <select
-                  id="inventario_id"
-                  value={formState.inventario_id}
+                  id="tipo_orden"
+                  value={formState.tipo_orden}
                   onChange={handleInputChange}
-                  className={`border p-3 rounded-lg w-full ${errors.inventario_id ? 'border-red-500' : ''}`}
+                  className={`border p-3 rounded-lg w-full ${errors.tipo_orden ? 'border-red-500' : ''}`}
                 >
-                  <option value="">Seleccionar producto</option>
-                  {inventarios.length > 0 ? (
-                    inventarios.map((inventario, index) => (
-                      <option key={`inventario-${inventario.id}-${index}`} value={inventario.id}>
-                        {inventario.nombre}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No hay productos disponibles
-                    </option>
-                  )}
+                  <option value="">Seleccionar tipo de orden</option>
+                  <option value="producto">Producto</option>
+                  <option value="materia_prima">Materia Prima</option>
                 </select>
-                {errors.inventario_id && <p className="text-red-500 text-sm mt-2">{errors.inventario_id}</p>}
+                {errors.tipo_orden && <p className="text-red-500 text-sm mt-2">{errors.tipo_orden}</p>}
               </div>
 
               <div className="relative">
@@ -249,7 +229,7 @@ const OrdenesCompra = () => {
                     Usuario
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">
-                    Producto
+                    Tipo de Orden
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider border border-gray-600">
                     Fecha
@@ -272,7 +252,7 @@ const OrdenesCompra = () => {
                       {ordenCompra.usuario}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">
-                      {ordenCompra.producto}
+                      {ordenCompra.tipo_orden === 'producto' ? 'Producto' : 'Materia Prima'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 border border-gray-400">
                       {new Date(ordenCompra.fecha).toLocaleDateString()}
