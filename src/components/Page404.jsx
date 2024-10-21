@@ -16,7 +16,7 @@ const Page404 = () => {
       </p>
 
       <div className="mt-10">
-        <Link to="/" className="relative inline-block text-lg group">
+        <Link to="/login" className="relative inline-block text-lg group">
           <span className="relative z-10 block px-5 py-3 font-bold text-white bg-blue-600 rounded-lg shadow-md group-hover:bg-blue-700 transition duration-300 ease-in-out">
             Go Back Home
           </span>

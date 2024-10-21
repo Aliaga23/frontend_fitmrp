@@ -1,14 +1,14 @@
-// frontend/components/SignUpForm.js
-import React from "react";
+import React, { useState } from "react";
 import api from '../api'; // Importar la instancia de Axios
 
 function SignUpForm() {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     name: "",
     email: "",
     password: ""
   });
-  const [error, setError] = React.useState(null);
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Estado para manejar el envío
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -18,9 +18,28 @@ function SignUpForm() {
     });
   };
 
+  const validateForm = () => {
+    const { name, email, password } = state;
+    if (!name || !email || !password) {
+      setError("Todos los campos son obligatorios");
+      return false;
+    }
+    // Validación básica del email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("El email no es válido");
+      return false;
+    }
+    return true;
+  };
+
   const handleOnSubmit = async (evt) => {
     evt.preventDefault();
+    setError(null);
 
+    if (!validateForm()) return;
+
+    setIsSubmitting(true); // Deshabilitar el botón durante la solicitud
     try {
       const { name, email, password } = state;
       await api.post('/auth/signup', { nombre: name, email, password, rol_id: 2 }); // Ajusta `rol_id` según tu lógica
@@ -28,6 +47,8 @@ function SignUpForm() {
       setState({ name: "", email: "", password: "" });
     } catch (error) {
       setError(error.response?.data?.message || 'Error al registrar');
+    } finally {
+      setIsSubmitting(false); // Rehabilitar el botón después de la solicitud
     }
   };
 
@@ -57,7 +78,9 @@ function SignUpForm() {
           placeholder="Pass"
         />
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Registrando...' : 'Sign Up'}
+        </button>
       </form>
     </div>
   );

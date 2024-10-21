@@ -15,8 +15,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   };
 
   const handleLogout = () => {
+    // Eliminar el token del localStorage
+    localStorage.removeItem('token');
+    
+    // Redirigir al usuario a la página de inicio de sesión
     navigate('/');
   };
+  
 
   const renderMenuItems = (items) => {
     return items.map((item) => (

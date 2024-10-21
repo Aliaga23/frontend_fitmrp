@@ -304,7 +304,7 @@ const ControlCalidad = () => {
           <Modal
   isOpen={showModal}
   onRequestClose={() => setShowModal(false)}
-  className="flex items-center justify-center fixed inset-0 z-50"
+  className="flex items-center justify-center fixed inset-0 z-50 p-4"
   overlayClassName="fixed inset-0 bg-black bg-opacity-50"
 >
   <motion.div
@@ -316,27 +316,33 @@ const ControlCalidad = () => {
       damping: 20,
       duration: 0.6,
     }}
-    className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl"
+    className="bg-white p-4 sm:p-6 rounded-xl shadow-lg w-full max-w-lg md:max-w-2xl lg:max-w-4xl overflow-y-auto max-h-[90vh]"
   >
     <motion.h3
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.5 }}
-      className="text-3xl font-bold text-gray-900 mb-6 text-center"
+      className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 text-center"
     >
       Registro de Control de Calidad
     </motion.h3>
 
     {/* Tabla de Control de Calidad */}
     {controlCalidad.length > 0 ? (
-      <div className="bg-white p-6 rounded-lg shadow-md mt-8">
-        <h3 className="text-lg font-semibold mb-6">Control de Calidad</h3>
+      <div className="bg-white p-4 rounded-lg shadow-md mt-4">
+        <h3 className="text-lg font-semibold mb-4">Control de Calidad</h3>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Resultado</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Observaciones</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">Fecha</th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Resultado
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Observaciones
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-600 uppercase tracking-wider">
+                Fecha
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -348,9 +354,9 @@ const ControlCalidad = () => {
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 className="hover:bg-gray-50 transition duration-200"
               >
-                <td className="px-6 py-4 text-sm text-gray-800">{control.resultado}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{control.observaciones}</td>
-                <td className="px-6 py-4 text-sm text-gray-800">{new Date(control.fecha_control).toLocaleString()}</td>
+                <td className="px-4 py-2 text-sm text-gray-800">{control.resultado}</td>
+                <td className="px-4 py-2 text-sm text-gray-800">{control.observaciones}</td>
+                <td className="px-4 py-2 text-sm text-gray-800">{new Date(control.fecha_control).toLocaleString()}</td>
               </motion.tr>
             ))}
           </tbody>
@@ -372,13 +378,15 @@ const ControlCalidad = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowModal(false)}
-        className="bg-red-600 text-white p-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300"
+        className="bg-red-600 text-white p-2 sm:p-3 rounded-lg shadow-lg hover:bg-red-700 transition duration-300"
       >
         Cerrar
       </motion.button>
     </div>
   </motion.div>
 </Modal>
+
+
 
 
         </main>

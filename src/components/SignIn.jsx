@@ -1,14 +1,18 @@
-import React from "react";
-import { useNavigate } from 'react-router-dom'; // Importar useNavigate
-import api from '../api'; // Importar la instancia de Axios
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../api'; // Asegúrate de que esta API esté correctamente configurada
+import AuthContext from '../context/AuthContext'; // Importar el contexto
 
 function SignInForm() {
-  const [state, setState] = React.useState({
-    email: "",
-    password: ""
+  const [state, setState] = useState({
+    email: '',
+    password: ''
   });
-  const [error, setError] = React.useState(null);
-  const navigate = useNavigate(); // Inicializar useNavigate
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Para deshabilitar el botón
+  const navigate = useNavigate();
+  
+  const { login } = useContext(AuthContext); // Usar la función de login del contexto
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -18,24 +22,41 @@ function SignInForm() {
     });
   };
 
+  const validateForm = () => {
+    const { email, password } = state;
+    if (!email || !password) {
+      setError('Por favor, completa ambos campos.');
+      return false;
+    }
+    return true;
+  };
+
   const handleOnSubmit = async (evt) => {
     evt.preventDefault();
+    setError(null);
 
+    if (!validateForm()) return;
+
+    setIsSubmitting(true); // Deshabilitar el botón mientras se envía la solicitud
     try {
-      // Hacer la solicitud al backend usando Axios
       const response = await api.post('/auth/login', state);
 
-      // Guardar el token en el local storage
-      localStorage.setItem('token', response.data.token);
+      if (response.data && response.data.token) {
+        // Llamar a la función login del contexto con el token
+        login(response.data.token);
 
-      // Limpiar el formulario
-      setState({ email: "", password: "" });
+        // Limpiar el formulario
+        setState({ email: '', password: '' });
 
-      // Redirigir a /usuario
-      navigate('/usuario');
-
+        // Redirigir al usuario autenticado
+        navigate('/usuario');
+      } else {
+        throw new Error('Token no recibido');
+      }
     } catch (error) {
       setError(error.response?.data?.message || 'Error al iniciar sesión');
+    } finally {
+      setIsSubmitting(false); // Rehabilitar el botón
     }
   };
 
@@ -43,7 +64,7 @@ function SignInForm() {
     <div className="form-container sign-in-container">
       <form onSubmit={handleOnSubmit}>
         <h1>Login</h1>
-        
+
         <input
           type="email"
           placeholder="Email"
@@ -59,7 +80,9 @@ function SignInForm() {
           onChange={handleChange}
         />
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Sign In</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Iniciando sesión...' : 'Sign In'}
+        </button>
       </form>
     </div>
   );
