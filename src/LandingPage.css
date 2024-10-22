@@ -1,62 +1,59 @@
 body {
-    padding: 0;
-    margin: 0;
-  }
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  min-height: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+  background-position: center;
+  background-size: cover;
+  height: 100vh; /* Toma toda la altura de la ventana */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
   
-  body {
-    min-height: 100%;
+}
+
+/* Animación de escritura */
+.typing-animation {
+  overflow: hidden; /* Asegura que el contenido quede oculto */
+  white-space: nowrap; /* Mantiene el texto en una sola línea */
+  border-right: 3px solid orange; /* Efecto del cursor */
+  width: 18ch; /* Ajusta este valor según la longitud del texto */
+  animation: typing 4s steps(18), blink-caret 0.75s step-end infinite; /* Ajusta el tiempo y los pasos */
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  50% {
+    border-color: transparent;
   }
-  
-  /* Animación de escritura */
-  @keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
-  }
-  
-  /* Efecto de subrayado en los links de la navbar */
-  .navbar a:hover {
-    text-decoration: underline;
-    color: orange;
-    transition: color 0.3s;
-  }
-  
-  /* Sable de luz animado */
-  @keyframes laserEffect {
-    0% { transform: scaleX(1); }
-    50% { transform: scaleX(1.05); }
-  }
-  
-  .animate-laser {
-    height: 4px;
-    width: 100%;
-    background: linear-gradient(to right, #ff8c00, #ff0000);
-    box-shadow: 0 0 15px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 0, 0, 0.5);
-    position: absolute;
-    animation: laserEffect 1s infinite;
-  }
-  
-  /* Pricing Section */
-  #plans .border {
-    border-color: orange;
-    transition: border-color 0.3s;
-  }
-  
-  #plans .border:hover {
-    border-color: red;
-  }
-  
-  /* Animación de escritura */
-  .typing-animation {
-    overflow: hidden; /* Ensures the content is hidden */
-    white-space: nowrap; /* Keeps the text on one line */
-    border-right: 3px solid orange; /* Cursor effect */
-    width: 18ch; /* Adjust this value based on the length of the text */
-    animation: typing 4s steps(18), blink-caret 0.75s step-end infinite; /* Adjust timing and steps */
-  }
-  
-  @keyframes blink-caret {
-    50% {
-      border-color: transparent;
-    }
-  }
-  
+}
+
+/* Sable de luz animado */
+@keyframes laserEffect {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(1.05); }
+  100% { transform: scaleX(1); }
+}
+
+.animate-laser {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(to right, #ff8c00, #ff0000);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 0, 0, 0.5);
+  position: absolute;
+  bottom: -10px; /* Ajusta la posición para estar justo debajo del texto */
+  left: 0;
+  animation: laserEffect 1s infinite; /* Añade la animación infinita */
+}
