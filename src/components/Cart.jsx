@@ -17,8 +17,6 @@ const Cart = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [orders, setOrders] = useState([]); // Estado para el historial de pedidos
 
-
-  
   // Envolver funciones con useCallback para evitar advertencias de dependencias
   const fetchCartItems = useCallback(async () => {
     try {
@@ -53,7 +51,7 @@ const Cart = () => {
     fetchPaymentMethods();
     fetchOrderHistory();
   }, [fetchCartItems, fetchPaymentMethods, fetchOrderHistory]);
-  
+
   const calculateTotal = (items) => {
     const total = items.reduce((acc, item) => acc + (Number(item.precio_unitario) * item.cantidad), 0);
     setTotalPrice(total.toFixed(2));
@@ -149,6 +147,20 @@ const Cart = () => {
     doc.text(`Total: $${order.total}`, 20, 70 + order.items.length * 10);
     doc.save(`factura_${user.nombre}_${Date.now()}.pdf`);
     alert('Factura generada y descargada.');
+  };
+
+  const requestRefund = async (orderId) => {
+    try {
+      await axios.post('/devoluciones', {
+        pedido_id: orderId,
+        motivo: 'Cliente solicita devolución',
+        estado: 'pendiente',
+      });
+      alert('Devolución solicitada exitosamente');
+    } catch (error) {
+      console.error('Error al solicitar devolución:', error);
+      alert('Hubo un problema al solicitar la devolución');
+    }
   };
 
   const generateQuotation = () => {
@@ -257,11 +269,18 @@ const Cart = () => {
                   <p>Total: ${Number(order.total).toFixed(2)}</p>
                   <p>Fecha: {new Date(order.fecha).toLocaleDateString()}</p>
                   <p>Estado: {order.estado}</p>
-                  {order.estado === 'confirmado' && (
-                    <button onClick={() => generateInvoice(order)} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                      Generar Factura
-                    </button>
-                  )}
+                  <div className="flex space-x-4 mt-4">
+                    {order.estado === 'confirmado' && (
+                      <>
+                        <button onClick={() => generateInvoice(order)} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                          Generar Factura
+                        </button>
+                        <button onClick={() => requestRefund(order.id)} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                          Pedir Devolución
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
