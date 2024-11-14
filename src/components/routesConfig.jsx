@@ -84,7 +84,12 @@ const routesConfig = {
         routes: [
           { path: '/ordenes-compra', label: 'Órdenes de Compra', permiso: 'ver_ordenes_compra' },
           { path: '/ordenes-compra-materia-prima', label: 'Órdenes de Compra de Materia Prima', permiso: 'ver_ordenes_compra_materia_prima' },
-          { path: '/ordenes-compra-producto', label: 'Órdenes de Compra de Productos', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
+          { path: '/ordenes-compra-producto', label: 'Órdenes de Compra de Productos', permiso: 'ver_ordenes_compra_producto' }, 
+          { path: '/devolucion', label: 'Devoluciones', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
+          { path: '/orders', label: 'Confirmar Pago', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
+          { path: '/metodopago', label: 'Metodos de Pago', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
+
+          // Nueva ruta añadida para OrdenCompraProducto
         ],
       },
     ],

@@ -49,7 +49,7 @@ function SignInForm() {
         setState({ email: '', password: '' });
 
         // Redirigir al usuario autenticado
-        navigate('/usuario');
+        navigate('/');
       } else {
         throw new Error('Token no recibido');
       }

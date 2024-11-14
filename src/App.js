@@ -17,7 +17,6 @@ import Proveedores from './components/Proveedores';
 import OrdenesCompra from './components/OrdenesCompra'; 
 import OrdenesCompraMateriaPrima from './components/OrdenesCompraMateriaPrima'; 
 import OrdenCompraProducto from './components/OrdenCompraProductos'; // Importar OrdenCompraProducto
-import Page404 from './components/Page404';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MovimientosMateriaPrima from './components/MovimientosMateriaPrima';
@@ -25,7 +24,12 @@ import EvaluacionProveedor from './components/EvaluacionProveedores';
 import LandingPage from './components/LandingPage';
 import ProductCatalog from './components/ProductCatalog';
 import FileUploadSimple from './components/FileUpload';
+import Cart from './components/Cart';
+import AdminOrders from './components/AdminOrders';
+import SuccessPage from './components/SuccessPage';
+import Devoluciones from './components/Devolucion';
 
+import PaymentMethods from './components/MetodoPago';
 const App = () => {
   return (
     <AuthProvider>
@@ -34,6 +38,7 @@ const App = () => {
           {/* Ruta pública */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/catalogo" element={<ProductCatalog />} />
+          <Route path="/success" element={<SuccessPage />} />
 
           <Route path="/login" element={<AuthPage />} />
           <Route path="/archivos" element={<FileUploadSimple />} />
@@ -56,12 +61,15 @@ const App = () => {
           <Route path="/evaluacion-proveedores" element={<ProtectedRoute element={<EvaluacionProveedor />} />} />
           <Route path="/ordenes-compra" element={<ProtectedRoute element={<OrdenesCompra />} />} />
           <Route path="/ordenes-compra-materia-prima" element={<ProtectedRoute element={<OrdenesCompraMateriaPrima />} />} />
+          <Route path="/cart" element={<ProtectedRoute element={<Cart />} />} />
+          <Route path="/orders" element={<ProtectedRoute element={<AdminOrders />} />} />
+          <Route path="/devolucion" element={<ProtectedRoute element={<Devoluciones />} />} />
+          <Route path="/metodopago" element={<ProtectedRoute element={<PaymentMethods />} />} />
 
           {/* Añadir la ruta para OrdenCompraProducto */}
           <Route path="/ordenes-compra-producto" element={<ProtectedRoute element={<OrdenCompraProducto />} />} />
 
-          {/* Ruta para la página 404 */}
-          <Route path="*" element={<Page404 />} />
+         
         </Routes>
       </Router>
     </AuthProvider>
