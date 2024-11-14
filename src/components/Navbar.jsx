@@ -14,7 +14,8 @@ const Navbar = () => {
     if (user) {
       updateCartCount(); // Actualizar el contador cuando el usuario esté autenticado
     }
-  }, [user, cartCount]); // Escuchar cambios en cartCount para actualizaciones en tiempo real
+  }, [user, cartCount, updateCartCount]); // Escuchar cambios en cartCount y updateCartCount para actualizaciones en tiempo real
+   // Escuchar cambios en cartCount para actualizaciones en tiempo real
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 

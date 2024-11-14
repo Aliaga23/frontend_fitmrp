@@ -1,44 +1,58 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, User } from "lucide-react";
+import { Search } from "lucide-react";
 import axios from '../api';
-import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 
 const ProductCatalog = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [cart, setCart] = useState(null);
+  const [, setCart] = useState(null);
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const buttonRef = useRef(null);
-  const menuRef = useRef(null);
-  const { user,updateCartCount } = useContext(AuthContext);
-  const [quantities, setQuantities] = useState({}); // Estado para almacenar la cantidad por producto
-  const [cartCount, setCartCount] = useState(0); // Estado para el contador del carrito
+  const { user, updateCartCount } = useContext(AuthContext);
+  const [quantities, setQuantities] = useState({});
+  const [cartCount] = useState(0);
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9;
 
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('/products');
+      setProducts(response.data);
+      setFilteredProducts(response.data);
+    } catch (error) {
+      console.error('Error al obtener los productos:', error);
+    }
+  };
 
+  // Usamos useCallback para estabilizar la referencia de la función
+  const getOrCreateCart = useCallback(async () => {
+    if (user) {
+      try {
+        const response = await axios.post('/carrito/get-or-create', { usuario_id: user.id });
+        setCart(response.data);
+        console.log("Carrito obtenido o creado:", response.data);
+      } catch (error) {
+        console.error("Error al obtener o crear el carrito:", error);
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('/products');
-        setProducts(response.data);
-        setFilteredProducts(response.data);
-      } catch (error) {
-        console.error('Error al obtener los productos:', error);
-      }
-    };
-
     fetchProducts();
-    if (user) updateCartCount(); // Actualizar el contador del carrito al cargar productos
-  }, [user]);
+    if (user) updateCartCount();
+  }, [user, updateCartCount]);
+
+  useEffect(() => {
+    if (user && user.id) {
+      getOrCreateCart();
+      updateCartCount();
+    }
+  }, [user, getOrCreateCart, updateCartCount]);
 
   useEffect(() => {
     const filtered = products.filter((product) => {
@@ -49,7 +63,8 @@ const ProductCatalog = () => {
     setFilteredProducts(filtered);
   }, [searchTerm, priceRange, products]);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  // Resto del componente...
+
 
   // Calcular productos mostrados en la página actual
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -58,17 +73,6 @@ const ProductCatalog = () => {
 
   // Cambiar página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Obtener o crear carrito
-  const getOrCreateCart = async () => {
-    try {
-      const response = await axios.post('/carrito/get-or-create', { usuario_id: user.id });
-      setCart(response.data);
-      console.log("Carrito obtenido o creado:", response.data);
-    } catch (error) {
-      console.error("Error al obtener o crear el carrito:", error);
-    }
-  };
 
   // Manejar el cambio de cantidad específico por producto
   const handleQuantityChange = (productId, quantity) => {
@@ -80,7 +84,7 @@ const ProductCatalog = () => {
 
   // Añadir producto al carrito
   const addToCart = async (productId) => {
-    const quantity = quantities[productId] || 1; // Usar cantidad seleccionada o 1 si no está definida
+    const quantity = quantities[productId] || 1;
     try {
       const response = await axios.post('/carrito/add-item', {
         usuario_id: user.id,
@@ -89,7 +93,7 @@ const ProductCatalog = () => {
       });
       setCart(response.data);
       console.log("Producto añadido al carrito:", response.data);
-      updateCartCount(); // Actualiza el contador después de añadir el producto
+      updateCartCount();
     } catch (error) {
       console.error("Error al añadir producto al carrito:", error);
     }
@@ -103,33 +107,24 @@ const ProductCatalog = () => {
       });
       setCart(response.data);
       console.log("Producto removido del carrito:", response.data);
-      updateCartCount(); // Actualiza el contador después de eliminar el producto
+      updateCartCount();
     } catch (error) {
       console.error("Error al remover producto del carrito:", error);
     }
   };
-
-  useEffect(() => {
-    if (user && user.id) {
-      getOrCreateCart();
-      updateCartCount();
-    }
-  }, [user]);
 
   // Obtener total de páginas
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#1a1a1a', color: '#f0f0f0' }}>
-      <Navbar cartCount={cartCount} /> {/* Pasamos el contador al componente Navbar */}
+      <Navbar cartCount={cartCount} />
 
-      {/* Main Content */}
       <div className="pt-24 max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-orange-500 mb-8 text-center">FitMRP SHOP</h1>
 
         <div className="mb-8 p-6 rounded-lg shadow-lg" style={{ backgroundColor: '#2a2a2a' }}>
           <div className="flex flex-wrap gap-4 items-end">
-            {/* Input de búsqueda */}
             <div className="flex-1 min-w-[200px]">
               <label htmlFor="search" className="mb-2 block text-white">
                 Buscar
@@ -148,7 +143,6 @@ const ProductCatalog = () => {
               </div>
             </div>
 
-            {/* Rango de precios */}
             <div className="flex-1 min-w-[200px]">
               <label htmlFor="price-range" className="mb-2 block text-white">
                 Rango de Precios: ${priceRange[0]} - ${priceRange[1]}
@@ -167,7 +161,6 @@ const ProductCatalog = () => {
           </div>
         </div>
 
-        {/* Productos */}
         <AnimatePresence>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentProducts.map((product) => (
@@ -217,7 +210,6 @@ const ProductCatalog = () => {
           </div>
         </AnimatePresence>
 
-        {/* Paginación */}
         <div className="mt-8 flex justify-center">
           <ul className="flex space-x-2">
             {Array.from({ length: totalPages }, (_, index) => (
@@ -234,7 +226,6 @@ const ProductCatalog = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <footer style={{ backgroundColor: '#1a1a1a', color: '#d1d1d1' }}>
         {/* Footer content here */}
       </footer>

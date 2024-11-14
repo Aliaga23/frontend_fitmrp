@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { User } from 'lucide-react'; // Importamos el icono de usuario
 import fondoLanding from '../asset/fondo_landing.jpeg'; // Importamos la imagen
 import '../LandingPage.css'; // Ajusta la ruta según sea necesario
 import SportsApparelMRP from './SportsApparelMRP';  // Ajusta la ruta si es necesario
@@ -11,10 +10,7 @@ const LandingPage = () => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
+  
   const handleClickOutside = (e) => {
     if (
       menuRef.current && !menuRef.current.contains(e.target) &&
