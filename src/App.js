@@ -28,8 +28,9 @@ import Cart from './components/Cart';
 import AdminOrders from './components/AdminOrders';
 import SuccessPage from './components/SuccessPage';
 import Devoluciones from './components/Devolucion';
-
+import Bitacora from './components/Bitacora';
 import PaymentMethods from './components/MetodoPago';
+import Reportes from './components/Reportes';
 const App = () => {
   return (
     <AuthProvider>
@@ -65,6 +66,8 @@ const App = () => {
           <Route path="/orders" element={<ProtectedRoute element={<AdminOrders />} />} />
           <Route path="/devolucion" element={<ProtectedRoute element={<Devoluciones />} />} />
           <Route path="/metodopago" element={<ProtectedRoute element={<PaymentMethods />} />} />
+          <Route path="/bitacora" element={<ProtectedRoute element={<Bitacora />} />} />
+          <Route path="/reportes" element={<ProtectedRoute element={<Reportes />} />} />
 
           {/* Añadir la ruta para OrdenCompraProducto */}
           <Route path="/ordenes-compra-producto" element={<ProtectedRoute element={<OrdenCompraProducto />} />} />

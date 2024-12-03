@@ -40,7 +40,7 @@ const routesConfig = {
         sector: 'Control de Calidad',
         routes: [
           { path: '/calidad', label: 'Control de Calidad', permiso: 'ver_control_calidad' },
-          { path: '/calidad-materia-prima', label: 'Control de Calidad de Materia Prima', permiso: 'ver_control_calidad_materia_prima' }, // Nueva ruta añadida
+          { path: '/calidad-materia-prima', label: 'Control de Calidad de Materia Prima', permiso: 'ver_control_calidad_materia_prima' },
         ],
       },
     ],
@@ -84,12 +84,21 @@ const routesConfig = {
         routes: [
           { path: '/ordenes-compra', label: 'Órdenes de Compra', permiso: 'ver_ordenes_compra' },
           { path: '/ordenes-compra-materia-prima', label: 'Órdenes de Compra de Materia Prima', permiso: 'ver_ordenes_compra_materia_prima' },
-          { path: '/ordenes-compra-producto', label: 'Órdenes de Compra de Productos', permiso: 'ver_ordenes_compra_producto' }, 
-          { path: '/devolucion', label: 'Devoluciones', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
-          { path: '/orders', label: 'Confirmar Pago', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
-          { path: '/metodopago', label: 'Metodos de Pago', permiso: 'ver_ordenes_compra_producto' }, // Nueva ruta añadida para OrdenCompraProducto
-
-          // Nueva ruta añadida para OrdenCompraProducto
+          { path: '/ordenes-compra-producto', label: 'Órdenes de Compra de Productos', permiso: 'ver_ordenes_compra_producto' },
+          { path: '/devolucion', label: 'Devoluciones', permiso: 'ver_devoluciones' },
+          { path: '/orders', label: 'Confirmar Pago', permiso: 'ver_confirmar_pago' },
+          { path: '/metodopago', label: 'Métodos de Pago', permiso: 'ver_metodos_pago' },
+        ],
+      },
+    ],
+  },
+  reportes: {
+    items: [
+      {
+        sector: 'Reportes',
+        routes: [
+          { path: '/reportes', label: 'Generar Reportes', permiso: 'ver_reportes' },
+          { path: '/bitacora', label: 'Bitácora de Acciones', permiso: 'ver_bitacora' },
         ],
       },
     ],
